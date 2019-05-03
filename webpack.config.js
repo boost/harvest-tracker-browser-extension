@@ -1,8 +1,12 @@
 var webpack = require('webpack');
 
 module.exports = {
-  entry: './lib/extension/main.js',
+  entry: {
+    pivotal: './lib/extension/pivotal.js',
+    basecamp: './lib/extension/basecamp.js'
+  },
   output: {
+    filename: '[name].js',
     path: 'dist'
   },
   module: {

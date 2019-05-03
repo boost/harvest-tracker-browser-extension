@@ -37,7 +37,13 @@ gulp.task('webpack', function (done) {
  */
 
 gulp.task('uglify', function () {
-  return gulp.src('dist/bundle.js')
+  return gulp.src('dist/pivotal.js')
+    .pipe(uglify())
+    .pipe(gulp.dest('dist'));
+});
+
+gulp.task('uglify', function () {
+  return gulp.src('dist/basecamp.js')
     .pipe(uglify())
     .pipe(gulp.dest('dist'));
 });

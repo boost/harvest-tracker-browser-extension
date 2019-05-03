@@ -1,25 +1,30 @@
 {
   "manifest_version": 2,
-  "name": "Harvest / PivotalTracker Browser Extension",
-  "description": "The missing link between Harvest and PivotalTracker.",
-  "author": "Michael Giuliana <mike@codeandcraft.nyc>",
-  "homepage_url": "https://www.github.com/codeandcraftnyc/harvest-tracker-browser-extension",
-  "version": "0.2.0",
+  "name": "Boost",
+  "description": "This extension provides harvest-pivotal-basecamp linking.",
+  "author": "Paul Mesnilgrente and Tim Wright",
+  "homepage_url": "https://www.github.com/boost/boost-browser-extension",
+  "version": "0.1.0",
   "icons": {
-    "16": "icon16.png",
-    "48": "icon48.png",
-    "128": "icon128.png"
+    "19":"19x19.png",
+    "20":"20x20.png",
+    "38":"38x38.png"
   },
-  "content_scripts": [{
-    "matches": [
-      "https://www.pivotaltracker.com/*"
-    ],
-    "js": [
-      "bundle.js"
-    ]
-  }],
+  "content_scripts": [
+    {
+      "matches": ["https://www.pivotaltracker.com/*"],
+      "js": ["pivotal.js"]
+    },
+    {
+      "matches": ["https://basecamp.com/*"],
+      "js": ["basecamp.js"],
+      "run_at": "document_end"
+    }
+  ],
   "permissions": [
+    "activeTab",
     "https://www.pivotaltracker.com/*",
-    "https://*.harvestapp.com/*"
+    "https://*.harvestapp.com/*",
+    "https://basecamp.com/*"
   ]
 }
