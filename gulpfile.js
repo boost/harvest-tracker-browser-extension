@@ -1,10 +1,9 @@
 var del = require('del');
 var pkg = require('./package.json');
-var gulp = require('gulp');
+const { src, dest, watch, series } = require('gulp');
+const terser = require('gulp-terser');
 var zip = require('gulp-zip');
-var gutil = require('gulp-util');
 var webpack = require('webpack');
-var uglify = require('gulp-uglify');
 var conventionalChangelog = require('gulp-conventional-changelog');
 var runSequence = require('run-sequence');
 var config = require('./webpack.config.js');
@@ -13,101 +12,77 @@ var config = require('./webpack.config.js');
  *
  */
 
-gulp.task('clean', function () {
+function clean() {
   return del(['dist', '*.zip']);
-});
+}
 
 /**
  *
  */
 
-gulp.task('webpack', function (done) {
+function webpackit(cb) {
   webpack(config, function (err, stats) {
     if (err) {
       throw new gutil.PluginError('[webpack]', err);
     }
 
     console.log(stats.toString());
-    done();
+    cb();
   });
-});
+}
 
 /**
  *
  */
 
-gulp.task('uglify', function () {
-  return gulp.src('dist/pivotal.js')
-    .pipe(uglify())
-    .pipe(gulp.dest('dist'));
-});
+function uglify_pivotal() {
+  return src('dist/pivotal.js')
+    .pipe(terser())
+    .pipe(dest('dist'));
+}
 
-gulp.task('uglify', function () {
-  return gulp.src('dist/basecamp.js')
-    .pipe(uglify())
-    .pipe(gulp.dest('dist'));
-});
-
-/**
- *
- */
-
-gulp.task('copy', function () {
-  return gulp.src('lib/resources/*')
-    .pipe(gulp.dest('dist'));
-});
+function uglify_basecamp() {
+  return src('dist/basecamp.js')
+    .pipe(terser())
+    .pipe(dest('dist'));
+}
 
 /**
  *
  */
 
-gulp.task('zip', function () {
-  return gulp.src('dist/*')
+function copy() {
+  return src('lib/resources/*')
+    .pipe(dest('dist'));
+}
+
+/**
+ *
+ */
+
+function zipit() {
+  return src('dist/*')
     .pipe(zip(pkg.version + '.zip'))
-    .pipe(gulp.dest('.'));
-});
+    .pipe(dest('.'));
+}
 
 /**
  *
  */
 
-gulp.task('changelog', function () {
-  return gulp.src('CHANGELOG.md', { buffer: false })
+function changelog() {
+  return src('CHANGELOG.md', { buffer: false })
     .pipe(conventionalChangelog({ preset: 'eslint' }))
-    .pipe(gulp.dest('./'));
-});
+    .pipe(dest('./'));
+}
 
 /**
  *
  */
 
-gulp.task('default', function (done) {
-  runSequence(
-    'clean',
-    'webpack',
-    'copy',
-    done
-  );
-});
+function dev() {
+  watch('lib/extension/**/*.{js,scss}', ['defaultTask']);
+}
 
-/**
- *
- */
-
-gulp.task('dev', ['default'], function () {
-  gulp.watch('lib/extension/**/*.{js,scss}', ['default']);
-});
-
-/**
- *
- */
-
-gulp.task('build', function (done) {
-  runSequence(
-    'default',
-    'uglify',
-    'zip',
-    'changelog',
-    done
-  );
-});
+exports.default = series(clean, webpackit, copy);
+exports.build = series(exports.default, uglify_pivotal, uglify_basecamp, zipit, changelog);

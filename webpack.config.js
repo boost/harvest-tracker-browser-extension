@@ -1,3 +1,4 @@
+const path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
@@ -7,19 +8,20 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: 'dist'
+    path: path.resolve(__dirname, 'dist')
   },
+  mode: 'production',
   module: {
-    loaders: [{
+    rules: [{
       test: /\.js$/,
       exclude: /node_modules/,
-      loaders: ['babel']
+      loaders: ['babel-loader']
     },{
       test: /\.scss$/,
-      loaders: ['style', 'css', 'sass']
+      loaders: ['style-loader', 'css-loader', 'sass-loader']
     },{
       test: /\.png$/,
-      loaders: ['url']
+      loaders: ['url-loader']
     }]
   }
 };
